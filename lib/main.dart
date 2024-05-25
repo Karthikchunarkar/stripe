@@ -5,7 +5,7 @@ import 'package:http/http.dart' as http;
 
 void main() {
   Stripe.publishableKey =
-      'mfbultan4ij4t44kjsp8ii3ghohe4j5qo4bgnpljlkq5se37v40a';// Use your publishable key
+      'pk_test_51PJt7MSEyw5WOO4EltXHyV4rtGiiaqpWmJCjFmBRZOb25z2xK0KHsqgkqNk1VjpCIQfsKMvOU8y7H30cPa65eFvo00pOqaSCFA'; // Use your publishable key
   runApp(const MyApp());
 }
 
@@ -40,12 +40,18 @@ class _MyHomePageState extends State<MyHomePage> {
     try {
       paymentIntentData = await createPaymentIntent();
 
-      await Stripe.instance.initPaymentSheet(
+      await Stripe.instance
+          .initPaymentSheet(
         paymentSheetParameters: SetupPaymentSheetParameters(
           paymentIntentClientSecret: paymentIntentData['client_secret'],
           merchantDisplayName: 'Ikay',
         ),
-      ).then((_) {});
+      )
+          .then((value) {
+        print('Payment sheet initialized');
+      }).catchError((e) {
+        print('Error initializing payment sheet: $e');
+      });
 
       displayPaymentSheet();
     } catch (e) {
@@ -75,10 +81,13 @@ class _MyHomePageState extends State<MyHomePage> {
             .join('&'),
         headers: {
           'Authorization':
-              'Bearer sk_test_51OZwpmSCZL8FwXYbkpy5hsA3zgQHJOGU33A7OLiJfYKIWInKycxddWHnS46toCUs3PzwZsTMjrjHk10eNtaqCTnz00K6KqEIjX',
+              'Bearer sk_test_51PJt7MSEyw5WOO4EXYNeKpA21KO9noxB7a49IwgHwADsrln9Tgywe9tAGlWVtQnF0W1if38YSR84UphC4sfW8WBQ00G7eNaYUf',
           'Content-Type': 'application/x-www-form-urlencoded',
         },
       );
+
+      // print the url
+      print(response.request!.url);
 
       if (response.statusCode == 200) {
         return json.decode(response.body);
